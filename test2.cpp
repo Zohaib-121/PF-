@@ -7,7 +7,7 @@
 
 using namespace sf;
 using namespace std;
-
+//global variables
 int screen_x = 1136;
 int screen_y = 896;
 
