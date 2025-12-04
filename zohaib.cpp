@@ -8,6 +8,8 @@
 using namespace sf;
 using namespace std;
 //global variables
+
+//32323232323222
 int screen_x = 1136;
 int screen_y = 896;
 
