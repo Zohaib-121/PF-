@@ -10,6 +10,17 @@ using namespace std;
 
 int screen_x = 1136;
 int screen_y = 896;
+void spawn_ghost(float enemy_x[], float enemy_y[], float enemy_velocityX[], 
+                 float enemy_velocityY[], bool enemy_alive[], int enemy_type[],
+                 int index, float x, float y, float speed)
+{
+    enemy_x[index] = x;
+    enemy_y[index] = y;
+    enemy_velocityX[index] = speed;
+    enemy_velocityY[index] = 0;
+    enemy_alive[index] = true;
+    enemy_type[index] = 1;  // 1 = ghost (floats, ignores gravity)
+}
 
 void check_ceiling_collision(char** lvl, float& player_y, float& velocityY,
                              float player_x, int cell_size, int PlayerWidth)
@@ -263,53 +274,14 @@ int main()
     PlayerSprite.setOrigin(0,0);
     PlayerSprite.setPosition(player_x, player_y);
 
-
-
-
-
-
-
-
-
-
-
     // ENEMY SETUP
-    const int MAX_ENEMIES = 3;
+    const int MAX_ENEMIES = 8;
     float enemy_x[MAX_ENEMIES];
     float enemy_y[MAX_ENEMIES];
     float enemy_velocityX[MAX_ENEMIES];
     float enemy_velocityY[MAX_ENEMIES];
     bool enemy_alive[MAX_ENEMIES];
     int enemy_type[MAX_ENEMIES];
-
-    // Place enemies on platforms (corrected positions)
-    enemy_x[0] = 128;
-    enemy_y[0] = 128;
-    enemy_velocityX[0] = 2;
-    enemy_velocityY[0] = 0;
-    enemy_alive[0] = true;
-    enemy_type[0] = 0;
-
-    enemy_x[1] = 512;
-    enemy_y[1] = 256;
-    enemy_velocityX[1] = -2;
-    enemy_velocityY[1] = 0;
-    enemy_alive[1] = true;
-    enemy_type[1] = 0;
-
-    enemy_x[2] = 192;
-    enemy_y[2] = 384;
-    enemy_velocityX[2] = 1.5;
-    enemy_velocityY[2] = 0;
-    enemy_alive[2] = true;
-    enemy_type[2] = 1;
-
-
-
-
-
-
-
 
 
 
@@ -323,16 +295,17 @@ int main()
     const int ENEMY_HEIGHT = 64;
 
 
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 0, 300, 200, 2.0);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 1, 500, 400, -1.5);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 2, 700, 300, 1.0);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 3, 150, 300, 1.2);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 4, 600, 150, -1.0);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 5, 900, 250, 2.5);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 6, 400, 350, -2.0);
+spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 7, 800, 400, 1.5);
 
 
-
-
-
-
-
-
-
-
+    
     // Create level array
     lvl = new char*[height];
     for (int i = 0; i < height; i++)
