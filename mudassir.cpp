@@ -199,7 +199,7 @@ int main()
     window.setFramerateLimit(60);
 
     const int cell_size = 64;
-    const int height = 14;
+    const int height = 11;
     const int width = 18;
     char** lvl;
 
@@ -208,10 +208,10 @@ int main()
     Texture blockTexture;
     Sprite blockSprite;
 
-    blockTexture.loadFromFile("Data/block2.png");
+    blockTexture.loadFromFile("Data/block3.png");
     blockSprite.setTexture(blockTexture);
 
-    bgTex.loadFromFile("Data/bg.png");
+    bgTex.loadFromFile("Data/bg4.png");
     bgSprite.setTexture(bgTex);
     bgSprite.setPosition(0,0);
 
@@ -263,6 +263,16 @@ int main()
     PlayerSprite.setOrigin(0,0);
     PlayerSprite.setPosition(player_x, player_y);
 
+
+
+
+
+
+
+
+
+
+
     // ENEMY SETUP
     const int MAX_ENEMIES = 3;
     float enemy_x[MAX_ENEMIES];
@@ -294,14 +304,34 @@ int main()
     enemy_alive[2] = true;
     enemy_type[2] = 1;
 
+
+
+
+
+
+
+
+
+
     Texture enemyTexture;
     Sprite enemySprite;
-    enemyTexture.loadFromFile("Data/playerR.png");
+    enemyTexture.loadFromFile("Data/ghostL1.png");
     enemySprite.setTexture(enemyTexture);
     enemySprite.setScale(2, 2);
 
     const int ENEMY_WIDTH = 64;
     const int ENEMY_HEIGHT = 64;
+
+
+
+
+
+
+
+
+
+
+
 
     // Create level array
     lvl = new char*[height];
