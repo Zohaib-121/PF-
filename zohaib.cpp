@@ -161,10 +161,10 @@ int main()
 	Texture blockTexture;
 	Sprite blockSprite;
 
-	blockTexture.loadFromFile("Data/block2.png");
+	blockTexture.loadFromFile("Data/block3.png");
 	blockSprite.setTexture(blockTexture);
 
-	bgTex.loadFromFile("Data/bg.png");
+	bgTex.loadFromFile("Data/bg4.png");
 	bgSprite.setTexture(bgTex);
 	bgSprite.setPosition(0,0);
 	
