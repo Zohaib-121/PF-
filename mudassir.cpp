@@ -199,7 +199,7 @@ int main()
     window.setFramerateLimit(60);
 
     const int cell_size = 64;
-    const int height = 11;
+    const int height = 14;
     const int width = 18;
     char** lvl;
 
@@ -240,7 +240,7 @@ int main()
     float velocityY = 0;
     float terminal_Velocity = 20;
 
-    int PlayerHeight = 102;
+    int PlayerHeight = 115;
     int PlayerWidth = 96;
     int animationFrame = 0;
     int count = 0;
