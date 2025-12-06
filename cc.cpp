@@ -235,6 +235,9 @@ int main()
     bool facingLeft = false;
     bool isPaused = false;
 
+    int playerLives = 3;
+    bool gameOver = false;
+
     player_LeftTxt_Idle.loadFromFile("Data/playerL.png");
     player_LeftTexture[0].loadFromFile("Data/WalkL1.png");
     player_LeftTexture[1].loadFromFile("Data/WalkL2.png");
@@ -312,7 +315,7 @@ int main()
             if (ev.type == Event::KeyPressed) pause_game(ev, isPaused);
         }
 
-        if (!isPaused)
+        if (!isPaused && !gameOver)
         {
             bool keyA = Keyboard::isKeyPressed(Keyboard::A);
             bool keyD = Keyboard::isKeyPressed(Keyboard::D);
@@ -361,13 +364,21 @@ int main()
                     if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
                                                   enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
                     {
-                        window.close();
+                        playerLives--;
+                        player_x = 500;
+                        player_y = 150;
+                        velocityY = 0;
+                        
+                        if(playerLives <= 0)
+                        {
+                             window.close();
+                        }
                         break;
                     }
                 }
             }
         }
-
+window.clear();  
         display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
 
         for(int i = 0; i < MAX_ENEMIES; i++)
@@ -381,6 +392,11 @@ int main()
 
         PlayerSprite.setPosition(player_x, player_y);
         window.draw(PlayerSprite);
+
+        // DRAW LIVES COUNTER (RED HEARTS)
+       
+        // GAME OVER SCREEN
+
 
         window.display();
     }

@@ -11,15 +11,6 @@ using namespace std;
 int screen_x = 1136;
 int screen_y = 896;
 
-bool check_player_enemy_collision(float player_x, float player_y, int playerWidth, int playerHeight,
-                                  float enemy_x, float enemy_y, int enemyWidth, int enemyHeight)
-{
-    return (player_x < enemy_x + enemyWidth &&
-            player_x + playerWidth > enemy_x &&
-            player_y < enemy_y + enemyHeight &&
-            player_y + playerHeight > enemy_y);
-}
-
 void spawn_ghost(float enemy_x[], float enemy_y[], float enemy_velocityX[], 
                  float enemy_velocityY[], bool enemy_alive[], int enemy_type[],
                  int index, float x, float y, float speed)
@@ -32,6 +23,7 @@ void spawn_ghost(float enemy_x[], float enemy_y[], float enemy_velocityX[],
     enemy_type[index] = 1;
 }
 
+// SIMPLEST PAUSE FUNCTION
 void pause_game(Event& ev, bool& paused)
 {
     if (ev.key.code == Keyboard::P) paused = !paused;
@@ -210,6 +202,12 @@ int main()
     bgSprite.setTexture(bgTex);
     bgSprite.setPosition(0,0);
 
+    Music lvlMusic;
+    lvlMusic.openFromFile("Data/mus.ogg");
+    lvlMusic.setVolume(20);
+    lvlMusic.play();
+    lvlMusic.setLoop(true);
+
     float player_x = 500;
     float player_y = 150;
     float speed = 5;
@@ -233,7 +231,7 @@ int main()
     int animationFrame = 0;
     int count = 0;
     bool facingLeft = false;
-    bool isPaused = false;
+    bool isPaused = false;  // PAUSE VARIABLE
 
     player_LeftTxt_Idle.loadFromFile("Data/playerL.png");
     player_LeftTexture[0].loadFromFile("Data/WalkL1.png");
@@ -353,23 +351,11 @@ int main()
             player_gravity(lvl, offset_y, velocityY, onGround, gravity, terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
             check_ceiling_collision(lvl, player_y, velocityY, player_x, cell_size, PlayerWidth);
             update_enemies(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, MAX_ENEMIES, lvl, cell_size, ENEMY_WIDTH, ENEMY_HEIGHT, gravity);
-
-            for(int i = 0; i < MAX_ENEMIES; i++)
-            {
-                if(enemy_alive[i])
-                {
-                    if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
-                                                  enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
-                    {
-                        window.close();
-                        break;
-                    }
-                }
-            }
         }
 
+        window.clear();
         display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
-
+        
         for(int i = 0; i < MAX_ENEMIES; i++)
         {
             if(enemy_alive[i])
@@ -382,9 +368,12 @@ int main()
         PlayerSprite.setPosition(player_x, player_y);
         window.draw(PlayerSprite);
 
+     
+
         window.display();
     }
 
+    lvlMusic.stop();
     for (int i = 0; i < height; i++)
     {
         delete[] lvl[i];
