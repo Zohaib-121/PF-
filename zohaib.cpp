@@ -279,7 +279,7 @@ int main()
 	player_RightTxt_Idle.loadFromFile("Data/playerR.png");
 	PlayerSprite.setTexture(player_RightTxt_Idle);
 	
-	PlayerSprite.setScale(3,3);
+	PlayerSprite.setScale(2.5f,2.5f);
 	PlayerSprite.setOrigin(0,0);
 	PlayerSprite.setPosition(player_x, player_y);   
 	
