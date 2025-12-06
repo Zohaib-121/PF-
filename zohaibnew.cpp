@@ -302,6 +302,7 @@ int main()
     bool vacuumActive = false;       //vacuum ke lye
     bool isPaused = false;  // PAUSE VARIABLE
 
+    int captured_enemyCount = 0;
 
 
 
@@ -322,6 +323,22 @@ int main()
     PlayerSprite.setOrigin(0,0);
     PlayerSprite.setPosition(player_x, player_y);
 
+    Texture bag_Tex;
+    Sprite  bag_Sprite;
+
+    bag_Tex.loadFromFile("Data/redbag1.png");   // your bag image
+    bag_Sprite.setTexture(bag_Tex);
+    bag_Sprite.setScale(2.5f, 2.5f);       // roughly match player scale
+
+
+
+     float playerPosX = PlayerSprite.getPosition().x;
+     float playerPosY = PlayerSprite.getPosition().y;
+
+
+    
+
+
 
 
 
@@ -336,7 +353,7 @@ int main()
     playerR_vac_right.loadFromFile ("Data/WalkR1.png");
    
 
-
+    
 
     //vacuum sucking sprites
 
@@ -362,10 +379,10 @@ int main()
     vacuum_Sprite_down.setTexture(vacuum_Tex_down);
 
 
-    vacuum_Sprite_left.setScale(2.f, 2.f);
-    vacuum_Sprite_right.setScale(2.f, 2.f);
-    vacuum_Sprite_up.setScale(2.f, 2.f);
-    vacuum_Sprite_down.setScale(2.f, 2.f);
+    vacuum_Sprite_left.setScale(2.0f, 2.0f);
+    vacuum_Sprite_right.setScale(2.0f, 2.0f);
+    vacuum_Sprite_up.setScale(2.0f, 2.0f);
+    vacuum_Sprite_down.setScale(2.0f, 2.0f);
 
 
 
@@ -375,7 +392,7 @@ int main()
 
 
     // ENEMY SETUP
-    const int MAX_ENEMIES = 3;
+    const int MAX_ENEMIES = 5;
     float enemy_x[MAX_ENEMIES];
     float enemy_y[MAX_ENEMIES];
     float enemy_velocityX[MAX_ENEMIES];
@@ -383,13 +400,15 @@ int main()
     bool enemy_alive[MAX_ENEMIES];
     int enemy_type[MAX_ENEMIES];
 
-    // Place enemies on platforms (corrected positions)
-    enemy_x[0] = 128;
+    // Place enemies on platforms 
+
+    enemy_x[0] =128;
     enemy_y[0] = 128;
     enemy_velocityX[0] = 1;
     enemy_velocityY[0] = 0;
     enemy_alive[0] = true;
     enemy_type[0] = 0;
+
 
     enemy_x[1] = 512;
     enemy_y[1] = 256;
@@ -405,7 +424,19 @@ int main()
     enemy_alive[2] = true;
     enemy_type[2] = 1;
 
+    enemy_x[3] =260;
+    enemy_y[3] = 260;
+    enemy_velocityX[3] = 1;
+    enemy_velocityY[3] = 0;
+    enemy_alive[3] = true;
+    enemy_type[3] = 0;
 
+    enemy_x[4] =900;
+    enemy_y[4] = 450;
+    enemy_velocityX[4] = 1;
+    enemy_velocityY[4] = 0;
+    enemy_alive[4] = true;
+    enemy_type[4] = 0;
 
 
 
@@ -535,9 +566,11 @@ int main()
             }
 
             if (ev.type == Event::KeyPressed) 
-            pause_game(ev, isPaused); 
+            {
+                pause_game(ev, isPaused);
+                 
+            }
         }
-
 if (!isPaused)
         {
 
@@ -701,7 +734,6 @@ float playerPosY = PlayerSprite.getPosition().y;
 
             else
             {
-               
                 if (facingLeft)               //Vaccum on left
                 {
                     offset_x = PlayerWidth+ 40.0f;                  // little left
@@ -710,7 +742,7 @@ float playerPosY = PlayerSprite.getPosition().y;
 
                 else   //Vacuum on righT
                 {
-                    offset_x = PlayerWidth  +25.0f;                   // small right
+                    offset_x = PlayerWidth +25.0f;                   // small right
                     offset_y = (PlayerHeight / 2.0f) -20.0f ;  // middle of body
                 }
             }
@@ -730,7 +762,112 @@ float playerPosY = PlayerSprite.getPosition().y;
 
 
 
+        // >>> INSERT COLLISION CODE HERE <<<
+
+        if (vacuumActive)
+        {
+            bool upPressed   = Keyboard::isKeyPressed(Keyboard::Up);
+            bool downPressed = Keyboard::isKeyPressed(Keyboard::Down);
+
+            // choose which vacuum sprite is active
+            float vacX, vacY;
+            float vacuum_width= vacuum_Tex_up.getSize().x * 2.0f;   // because setScale(2,2)
+            float wacuum_height = vacuum_Tex_up.getSize().y * 2.0f;
+
+            if (upPressed)
+            {
+                vacX = vacuum_Sprite_up.getPosition().x;
+                vacY = vacuum_Sprite_up.getPosition().y;
+            }
+            else if (downPressed)
+            {
+                vacX = vacuum_Sprite_down.getPosition().x;
+                vacY = vacuum_Sprite_down.getPosition().y;
+            }
+            else if (facingLeft)
+            {
+                vacX = vacuum_Sprite_left.getPosition().x;
+                vacY = vacuum_Sprite_left.getPosition().y;
+            }
+            else
+            {
+                vacX = vacuum_Sprite_right.getPosition().x;
+                vacY = vacuum_Sprite_right.getPosition().y;
+            }
+
         
+
+            // All 4 Points of rainbow vacuum
+
+              // rainbow rect
+            float vacLeft   = vacX;
+            float vacRight  = vacX +vacuum_width;
+            float vacTop    = vacY;
+            float vacBottom = vacY + wacuum_height;
+
+
+
+            // check all enemies
+            for (int i = 0; i < MAX_ENEMIES; i++)
+            {
+                if (!enemy_alive[i])
+                 continue;
+
+                float enX = enemy_x[i];
+                float enY = enemy_y[i];
+
+                float enLeft   = enX;
+                float enRight  = enX + ENEMY_WIDTH;
+                float enTop    = enY;
+                float enBottom = enY + ENEMY_HEIGHT;
+
+
+                //Crossover = enemies vacuum mein aa jayen
+
+                bool crossover= (vacLeft < enRight && vacRight>enLeft &&vacTop<enBottom &&vacBottom>enTop);
+
+                if (crossover && captured_enemyCount < 3 )
+                 {
+                    enemy_alive[i]= false;  //sucked into the vacuum
+                    captured_enemyCount++;
+                 }
+            }
+           
+        }
+
+
+
+
+                // Bag follows player if carrying enemies
+        if (captured_enemyCount > 0)
+        {
+            float playerPosX = PlayerSprite.getPosition().x;
+            float playerPosY = PlayerSprite.getPosition().y;
+
+            float bagOffsetX;
+            float bagOffsetY = 15.0f;   // small vertical tweak; adjust as needed
+
+            if (facingLeft)
+            {
+                // bag on right side of player
+                bagOffsetX = PlayerWidth;      // player width * scale (≈ 60 * 2.5 = 150)
+            }
+            else
+            {
+                // bag on left side of player
+                bagOffsetX = -10.0f;                  // 40 pixels to the left; tweak this
+            }
+
+            bag_Sprite.setPosition(playerPosX + bagOffsetX,
+                                playerPosY + bagOffsetY);  // follow player every frame 
+        }
+
+
+
+
+
+
+
 
 
 
@@ -763,6 +900,9 @@ float playerPosY = PlayerSprite.getPosition().y;
         window.draw(PlayerSprite);
 
     
+                if (captured_enemyCount > 0)       // bag appears only when carrying enemies
+                 window.draw(bag_Sprite);
+
 
                 if (vacuumActive)
                 {
@@ -783,16 +923,16 @@ float playerPosY = PlayerSprite.getPosition().y;
 
 
 
-
-
         window.display();
+     
     }
 
 
 
-    lvlMusic.stop(); 
+    
 
 }
+lvlMusic.stop(); 
     for (int i = 0; i < height; i++)
     {
         delete[] lvl[i];
