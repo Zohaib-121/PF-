@@ -293,7 +293,7 @@ int main()
     float terminal_Velocity = 20;
 
     int PlayerHeight = 100;
-    int PlayerWidth = 96;
+    int PlayerWidth = 60;
     int animationFrame = 0;
     int count = 0;
     bool facingLeft = false;           //player ka left,right
@@ -483,7 +483,7 @@ int main()
 
 
     // Middle horizontal platform
-  
+     lvl[5][6] = '#';
      lvl[5][7] = '#';
      lvl[5][8] = '#';
      lvl[5][9] = '#';
@@ -704,13 +704,13 @@ float playerPosY = PlayerSprite.getPosition().y;
                
                 if (facingLeft)               //Vaccum on left
                 {
-                    offset_x = PlayerWidth+3.0f;                  // little left
+                    offset_x = PlayerWidth+ 40.0f;                  // little left
                     offset_y = PlayerHeight / 2.0f -20.0f ;     // middle of body
                 }
 
                 else   //Vacuum on righT
                 {
-                    offset_x = PlayerWidth -3.0f;                   // small right
+                    offset_x = PlayerWidth  +25.0f;                   // small right
                     offset_y = (PlayerHeight / 2.0f) -20.0f ;  // middle of body
                 }
             }
