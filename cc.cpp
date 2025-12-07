@@ -32,6 +32,17 @@ void spawn_ghost(float enemy_x[], float enemy_y[], float enemy_velocityX[],
     enemy_type[index] = 1;
 }
 
+void spawn_skeleton(float enemy_x[], float enemy_y[], float enemy_velocityX[], 
+                    float enemy_velocityY[], bool enemy_alive[], int enemy_type[],
+                    int index, float x, float y, float speed)
+{
+    enemy_x[index] = x;
+    enemy_y[index] = y;
+    enemy_velocityX[index] = speed;
+    enemy_velocityY[index] = 0;
+    enemy_alive[index] = true;
+    enemy_type[index] = 2;
+}
 void pause_game(Event& ev, bool& paused)
 {
     if (ev.key.code == Keyboard::P) paused = !paused;
@@ -255,7 +266,7 @@ int main()
     PlayerSprite.setOrigin(0,0);
     PlayerSprite.setPosition(player_x, player_y);
 
-    const int MAX_ENEMIES = 8;
+    const int MAX_ENEMIES = 12;
     float enemy_x[MAX_ENEMIES];
     float enemy_y[MAX_ENEMIES];
     float enemy_velocityX[MAX_ENEMIES];
@@ -269,6 +280,10 @@ int main()
     enemySprite.setTexture(enemyTexture);
     enemySprite.setScale(2, 2);
 
+    Texture skeletonTexture;
+skeletonTexture.loadFromFile("Data/skeleton.png");  // your skeleton sprite file
+
+
     const int ENEMY_WIDTH = 64;
     const int ENEMY_HEIGHT = 64;
 
@@ -280,6 +295,13 @@ int main()
     spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 5, 900, 250, 2.5);
     spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 6, 400, 350, -2.0);
     spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 7, 800, 400, 1.5);
+    
+
+
+     spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 8, 200, 500, 1.8);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 9, 600, 500, -2.2);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 10, 900, 600, 1.3);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 11, 350, 600, -1.7);
     
     lvl = new char*[height];
     for (int i = 0; i < height; i++)
@@ -379,24 +401,35 @@ for(int i = 0; i < MAX_ENEMIES; i++)
 }
 
 window.clear();
+ display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
 
-        display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
 
         for(int i = 0; i < MAX_ENEMIES; i++)
         {
             if(enemy_alive[i])
             {
+                if(enemy_type[i] == 1)
+                {
+                    enemySprite.setTexture(enemyTexture);
+                }
+                else if(enemy_type[i] == 2)
+                {
+                    enemySprite.setTexture(skeletonTexture);
+                }
                 enemySprite.setPosition(enemy_x[i], enemy_y[i]);
                 window.draw(enemySprite);
             }
         }
 
+
         PlayerSprite.setPosition(player_x, player_y);
         window.draw(PlayerSprite);
+
 
         // DRAW LIVES COUNTER (RED HEARTS)
        
         // GAME OVER SCREEN
+
 
 
         window.display();
