@@ -301,6 +301,7 @@ int main()
     const float gravity = 1;
 
     int player_score=0;
+    bool bonusGiven = false; 
 
 
  //  Menu for player choosing
@@ -636,10 +637,10 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
     
 
 
-    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 8, 200, 500, 1.8);
-    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 9, 600, 500, -2.2);
-    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 10, 900, 600, 1.3);
-    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 11, 350, 600, -1.7);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 8, 200, 500, 2);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 9, 600, 500, 2);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 10, 900, 600, 2);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 11, 350, 600, 2);
     
 
 
@@ -979,23 +980,23 @@ if (!isPaused)
 
 
         // Jump
-        if (Keyboard::isKeyPressed(Keyboard::W) && onGround)
+        if (Keyboard::isKeyPressed(Keyboard::Up) && onGround)
             velocityY = jumpStrength;
 
 
         // Movement and horizontal facing
-        bool keyA = Keyboard::isKeyPressed(Keyboard::A);
-        bool keyD = Keyboard::isKeyPressed(Keyboard::D);
+        bool keyLeft = Keyboard::isKeyPressed(Keyboard::Left);
+        bool keyRight = Keyboard::isKeyPressed(Keyboard::Right);
 
 
 
 
-        if (keyA)
+        if (keyLeft)
         {
             side_collision(lvl, player_x, player_y, -speed, cell_size, PlayerHeight, PlayerWidth);
             facingLeft = true;
         }
-        if (keyD)
+        if (keyRight)
         {
             side_collision(lvl, player_x, player_y,  speed, cell_size, PlayerHeight, PlayerWidth);
             facingLeft = false;
@@ -1005,14 +1006,14 @@ if (!isPaused)
 
 
 
-        // Vertical facing for vacuum (Up = up, Down = down)
-        if (Keyboard::isKeyPressed(Keyboard::Up))
+        // Vertical facing for vacuum (W = up, S = down)
+        if (Keyboard::isKeyPressed(Keyboard::W))
             facingUp = true;
-        if (Keyboard::isKeyPressed(Keyboard::Down))
+        if (Keyboard::isKeyPressed(Keyboard::S))
             facingUp = false;
 
         // --- WALK ANIMATION COUNTER ---
-        if (keyA || keyD)
+        if (keyLeft || keyRight)
         {
             count++;
             if (count % 10 == 0)
@@ -1048,8 +1049,8 @@ float playerPosY = PlayerSprite.getPosition().y;
 
         if (vacuumActive)         //Vacuum on
         {
-           bool upPressed   = Keyboard::isKeyPressed(Keyboard::Up);
-           bool downPressed = Keyboard::isKeyPressed(Keyboard::Down);
+           bool upPressed   = Keyboard::isKeyPressed(Keyboard::W);
+           bool downPressed = Keyboard::isKeyPressed(Keyboard::S);
 
             if (upPressed) // Vacuum sprites
           
@@ -1107,8 +1108,8 @@ float playerPosY = PlayerSprite.getPosition().y;
 
         if (vacuumActive)
         {
-            bool upPressed   = Keyboard::isKeyPressed(Keyboard::Up);
-            bool downPressed = Keyboard::isKeyPressed(Keyboard::Down);
+            bool upPressed   = Keyboard::isKeyPressed(Keyboard::W);
+            bool downPressed = Keyboard::isKeyPressed(Keyboard::S);
 
             if (upPressed)           //Vacuum up from the player
              {
@@ -1158,8 +1159,8 @@ float playerPosY = PlayerSprite.getPosition().y;
 
         if (vacuumActive)
         {
-            bool upPressed   = Keyboard::isKeyPressed(Keyboard::Up);
-            bool downPressed = Keyboard::isKeyPressed(Keyboard::Down);
+            bool upPressed   = Keyboard::isKeyPressed(Keyboard::W);
+            bool downPressed = Keyboard::isKeyPressed(Keyboard::S);
 
             // choose which vacuum sprite is active
             float vacX, vacY;
@@ -1223,8 +1224,11 @@ float playerPosY = PlayerSprite.getPosition().y;
                     enemy_alive[i]= false;  //sucked into the vacuum
                     captured_enemyCount++;
 
-
+                    if (enemy_type[i] == 1)      // ghost
                     player_score +=50;
+
+                    else if (enemy_type[i] == 2) // skeleton
+                    player_score += 75;
                  }
             }
            
@@ -1262,28 +1266,64 @@ livesText.setString("Lives: " + to_string(playerLives));
 
 
 
-for(int i = 0; i < MAX_ENEMIES; i++)
-{
 
- if(enemy_alive[i])
-    {
-        if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
-                                      enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
-        {
-            playerLives--;
-            player_x = 500;
-            player_y = 150;
-            velocityY = 0;
-            captured_enemyCount = 0;
-            if(playerLives <= 0)
+                    // Empty bag when E is pressed
+            if (Keyboard::isKeyPressed(Keyboard::F) && captured_enemyCount > 0)
             {
-                window.close();
+                captured_enemyCount = 0;
             }
-            break;
-        }
-    }
 
-}
+
+            bool allDead = true;
+            for(int i = 0; i < MAX_ENEMIES; i++)
+            {
+                if(enemy_alive[i])
+                {
+                    allDead = false;
+                    break;
+                }
+            }
+
+            if(allDead&&!bonusGiven)
+            {
+                player_score += 1000;
+                bonusGiven=true;
+                // Game ends when all enemies are gone
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+            for(int i = 0; i < MAX_ENEMIES; i++)
+            {
+
+            if(enemy_alive[i])
+                {
+                    if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
+                                                enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
+                    {
+                        playerLives--;
+                        player_x = 500;
+                        player_y = 150;
+                        velocityY = 0;
+                        captured_enemyCount = 0;
+                        if(playerLives <= 0)
+                        {
+                            window.close();
+                        }
+                        break;
+                    }
+                }
+
+            }
 
 
 
@@ -1339,8 +1379,8 @@ for(int i = 0; i < MAX_ENEMIES; i++)
 
                 if (vacuumActive)
                 {
-                    bool upPressed   = Keyboard::isKeyPressed(Keyboard::Up);
-                    bool downPressed = Keyboard::isKeyPressed(Keyboard::Down);
+                    bool upPressed   = Keyboard::isKeyPressed(Keyboard::W);
+                    bool downPressed = Keyboard::isKeyPressed(Keyboard::S);
 
                     if (upPressed)
                         window.draw(vacuum_Sprite_up);
