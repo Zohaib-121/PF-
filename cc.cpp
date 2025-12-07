@@ -314,71 +314,72 @@ int main()
             if (ev.type == Event::Closed) window.close();
             if (ev.type == Event::KeyPressed) pause_game(ev, isPaused);
         }
+if (!isPaused && !gameOver)
+{
+    bool keyA = Keyboard::isKeyPressed(Keyboard::A);
+    bool keyD = Keyboard::isKeyPressed(Keyboard::D);
 
-        if (!isPaused && !gameOver)
+    if (keyA || keyD)
+    {
+        count++;
+        if (count % 10 == 0)
         {
-            bool keyA = Keyboard::isKeyPressed(Keyboard::A);
-            bool keyD = Keyboard::isKeyPressed(Keyboard::D);
+            animationFrame = (animationFrame + 1) % 4;
+        }
+    }
 
-            if (keyA || keyD)
-            {
-                count++;
-                if (count % 10 == 0)
-                {
-                    animationFrame = (animationFrame + 1) % 4;
-                }
-            }
+    if (Keyboard::isKeyPressed(Keyboard::Escape))
+    {
+        window.close();
+    }
 
-            if (Keyboard::isKeyPressed(Keyboard::Escape))
+    if (Keyboard::isKeyPressed(Keyboard::W) && onGround)
+    {
+        velocityY = jumpStrength;
+    }
+    
+    if (Keyboard::isKeyPressed(Keyboard::A))
+    { 
+        side_collision(lvl, player_x, player_y, -speed, cell_size, PlayerHeight, PlayerWidth);
+        PlayerSprite.setTexture(player_LeftTexture[animationFrame]);
+        facingLeft = true;
+    }
+    
+    if (Keyboard::isKeyPressed(Keyboard::D))
+    {
+        side_collision(lvl, player_x, player_y, speed, cell_size, PlayerHeight, PlayerWidth);
+        PlayerSprite.setTexture(player_RightTexture[animationFrame]);
+        facingLeft = false;
+    }
+
+    player_gravity(lvl, offset_y, velocityY, onGround, gravity, terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
+    check_ceiling_collision(lvl, player_y, velocityY, player_x, cell_size, PlayerWidth);
+    update_enemies(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, MAX_ENEMIES, lvl, cell_size, ENEMY_WIDTH, ENEMY_HEIGHT, gravity);
+}
+
+for(int i = 0; i < MAX_ENEMIES; i++)
+{
+    if(enemy_alive[i])
+    {
+        if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
+                                      enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
+        {
+            playerLives--;
+            player_x = 500;
+            player_y = 150;
+            velocityY = 0;
+            
+            if(playerLives <= 0)
             {
                 window.close();
             }
-
-            if (Keyboard::isKeyPressed(Keyboard::W) && onGround)
-            {
-                velocityY = jumpStrength;
-            }
-            
-            if (Keyboard::isKeyPressed(Keyboard::A))
-            { 
-                side_collision(lvl, player_x, player_y, -speed, cell_size, PlayerHeight, PlayerWidth);
-                PlayerSprite.setTexture(player_LeftTexture[animationFrame]);
-                facingLeft = true;
-            }
-            
-            if (Keyboard::isKeyPressed(Keyboard::D))
-            {
-                side_collision(lvl, player_x, player_y, speed, cell_size, PlayerHeight, PlayerWidth);
-                PlayerSprite.setTexture(player_RightTexture[animationFrame]);
-                facingLeft = false;
-            }
-
-            player_gravity(lvl, offset_y, velocityY, onGround, gravity, terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
-            check_ceiling_collision(lvl, player_y, velocityY, player_x, cell_size, PlayerWidth);
-            update_enemies(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, MAX_ENEMIES, lvl, cell_size, ENEMY_WIDTH, ENEMY_HEIGHT, gravity);
-
-            for(int i = 0; i < MAX_ENEMIES; i++)
-            {
-                if(enemy_alive[i])
-                {
-                    if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
-                                                  enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
-                    {
-                        playerLives--;
-                        player_x = 500;
-                        player_y = 150;
-                        velocityY = 0;
-                        
-                        if(playerLives <= 0)
-                        {
-                             window.close();
-                        }
-                        break;
-                    }
-                }
-            }
+            break;
         }
-window.clear();  
+    }
+}
+
+window.clear();
+
         display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
 
         for(int i = 0; i < MAX_ENEMIES; i++)
