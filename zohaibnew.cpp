@@ -194,6 +194,45 @@ void update_enemies(float enemy_x[], float enemy_y[], float enemy_velocityX[], f
 
 
 
+void spawn_ghost(float enemy_x[], float enemy_y[], float enemy_velocityX[], 
+                 float enemy_velocityY[], bool enemy_alive[], int enemy_type[],
+                 int index, float x, float y, float speed)
+{
+    enemy_x[index] = x;
+    enemy_y[index] = y;
+    enemy_velocityX[index] = speed;
+    enemy_velocityY[index] = 0;
+    enemy_alive[index] = true;
+    enemy_type[index] = 1;
+}
+
+
+void spawn_skeleton(float enemy_x[], float enemy_y[], float enemy_velocityX[], 
+                    float enemy_velocityY[], bool enemy_alive[], int enemy_type[],
+                    int index, float x, float y, float speed)
+{
+    enemy_x[index] = x;
+    enemy_y[index] = y;
+    enemy_velocityX[index] = speed;
+    enemy_velocityY[index] = 0;
+    enemy_alive[index] = true;
+    enemy_type[index] = 2;
+}
+
+
+bool check_player_enemy_collision(float player_x, float player_y, int playerWidth, int playerHeight,
+                                  float enemy_x, float enemy_y, int enemyWidth, int enemyHeight)
+{
+    return (player_x < enemy_x + enemyWidth &&
+            player_x + playerWidth > enemy_x &&
+            player_y < enemy_y + enemyHeight &&
+            player_y + playerHeight > enemy_y);
+}
+
+
+
+
+
 // SIMPLEST PAUSE FUNCTION
 void pause_game(Event& ev, bool& paused)
 {
@@ -261,6 +300,112 @@ int main()
     const float jumpStrength = -20;
     const float gravity = 1;
 
+    int player_score=0;
+
+
+ //  Menu for player choosing
+
+    Font player_Font;
+    player_Font.loadFromFile("Data/menu.ttf");
+
+
+    //Heading of choose player
+
+    Text txtChoose;
+    txtChoose.setFont(player_Font);
+    txtChoose.setCharacterSize(32);
+    txtChoose.setFillColor(Color::White);
+    txtChoose.setPosition(380.f, 150.f);
+    txtChoose.setString("Choose player");
+
+
+//  choosing Green or Yellw
+
+    Text GorY;
+    GorY.setFont(player_Font);
+    GorY.setCharacterSize(24);
+    GorY.setFillColor(Color::Yellow);
+    GorY.setPosition(260.f, 200.f);
+    GorY.setString("Press G for green, Y for yellow");
+
+
+
+
+
+ // Font and texture for the score   
+
+    Font score_font;
+    score_font.loadFromFile("Data/Kotton.ttf");
+
+    Text score_text;
+    score_text.setFont(score_font);
+    score_text.setCharacterSize(30);
+    score_text.setFillColor(Color::White);
+    score_text.setPosition(10.0f , 10.0f);
+    score_text.setString("Score: 0");
+
+
+
+
+//font and texture for lives count
+
+
+Font lives_Font;
+lives_Font.loadFromFile("Data/Kotton.ttf");
+
+Text livesText;
+livesText.setFont(lives_Font);
+livesText.setCharacterSize(30);
+livesText.setFillColor(Color::Red);
+livesText.setPosition(10.f, 50.f);   // top-right-ish
+livesText.setString("Lives: 3");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Green player
+
     Texture player_LeftTxt_Idle;
     Texture player_RightTxt_Idle;
     Texture player_RightTexture[4];
@@ -276,6 +421,13 @@ int main()
 
 
 
+//YEllow player's
+
+    Texture Yplayer_LeftTxt_Idle;
+    Texture Yplayer_RightTxt_Idle;
+    Texture Yplayer_RightTexture[4];
+    Texture Yplayer_LeftTexture[4];
+    Sprite YPlayerSprite;
 
 
 
@@ -303,10 +455,11 @@ int main()
     bool isPaused = false;  // PAUSE VARIABLE
 
     int captured_enemyCount = 0;
+    int playerLives = 3;
 
+//Green player
 
-
-    player_LeftTxt_Idle.loadFromFile("Data/playerLeft.png");
+    player_LeftTxt_Idle.loadFromFile("Data/playerl.png");
     player_LeftTexture[0].loadFromFile("Data/WalkL1.png");
     player_LeftTexture[1].loadFromFile("Data/WalkL2.png");
     player_LeftTexture[2].loadFromFile("Data/WalkL3.png");
@@ -355,6 +508,38 @@ int main()
 
     
 
+
+//Yellow player
+
+
+    Yplayer_LeftTxt_Idle.loadFromFile("Data/yellowPlayer_Idle.png");
+    Yplayer_LeftTexture[0].loadFromFile("Data/YplayerL1.png");
+    Yplayer_LeftTexture[1].loadFromFile("Data/YplayerL2.png");
+    Yplayer_LeftTexture[2].loadFromFile("Data/YplayerL3.png");
+    Yplayer_LeftTexture[3].loadFromFile("Data/YplayerL4.png");
+
+    Yplayer_RightTxt_Idle.loadFromFile("Data/yellowPlayer_RightIdle.png");
+    Yplayer_RightTexture[0].loadFromFile("Data/y_right1.png");
+    Yplayer_RightTexture[1].loadFromFile("Data/y_right2.png");
+    Yplayer_RightTexture[2].loadFromFile("Data/y_right3.png");
+    Yplayer_RightTexture[3].loadFromFile("Data/y_right4.png");
+
+    YPlayerSprite.setTexture(Yplayer_RightTexture[0]);
+    YPlayerSprite.setScale(2.5f,2.5f);
+    YPlayerSprite.setOrigin(0,0);
+    YPlayerSprite.setPosition(player_x, player_y);
+
+
+
+    int playerChoice = 0;   // 0 = green, 1 = yellow
+    bool chosen = false;
+
+
+
+
+
+
+
     //vacuum sucking sprites
 
     Sprite vacuum_Sprite_left;
@@ -387,12 +572,7 @@ int main()
 
 
 
-
-
-
-
-    // ENEMY SETUP
-    const int MAX_ENEMIES = 5;
+    const int MAX_ENEMIES = 12;
     float enemy_x[MAX_ENEMIES];
     float enemy_y[MAX_ENEMIES];
     float enemy_velocityX[MAX_ENEMIES];
@@ -400,63 +580,76 @@ int main()
     bool enemy_alive[MAX_ENEMIES];
     int enemy_type[MAX_ENEMIES];
 
-    // Place enemies on platforms 
-
-    enemy_x[0] =128;
-    enemy_y[0] = 128;
-    enemy_velocityX[0] = 1;
-    enemy_velocityY[0] = 0;
-    enemy_alive[0] = true;
-    enemy_type[0] = 0;
-
-
-    enemy_x[1] = 512;
-    enemy_y[1] = 256;
-    enemy_velocityX[1] = -1;
-    enemy_velocityY[1] = 0;
-    enemy_alive[1] = true;
-    enemy_type[1] = 0;
-
-    enemy_x[2] = 192;
-    enemy_y[2] = 384;
-    enemy_velocityX[2] = 1;
-    enemy_velocityY[2] = 0;
-    enemy_alive[2] = true;
-    enemy_type[2] = 1;
-
-    enemy_x[3] =260;
-    enemy_y[3] = 260;
-    enemy_velocityX[3] = 1;
-    enemy_velocityY[3] = 0;
-    enemy_alive[3] = true;
-    enemy_type[3] = 0;
-
-    enemy_x[4] =900;
-    enemy_y[4] = 450;
-    enemy_velocityX[4] = 1;
-    enemy_velocityY[4] = 0;
-    enemy_alive[4] = true;
-    enemy_type[4] = 0;
+	for (int i = 0; i < MAX_ENEMIES; i++)
+	{
+		enemy_x[i] = 0;
+		enemy_y[i] = 0;
+		enemy_velocityX[i] = 0;
+		enemy_velocityY[i] = 0;
+		enemy_alive[i] = false;   // important
+		enemy_type[i] = 0;
+	}
 
 
 
-
-
-
-
-
-    Texture enemyTexture;
+    Texture ghostTexture;
     Sprite enemySprite;
-    enemyTexture.loadFromFile("Data/ghostL1.png");
-    enemySprite.setTexture(enemyTexture);
+    ghostTexture.loadFromFile("Data/ghostL1.png");
+    enemySprite.setTexture(ghostTexture);
     enemySprite.setScale(2, 2);
 
-    const int ENEMY_WIDTH = 64;
-    const int ENEMY_HEIGHT = 64;
+
+
+    Texture skeletonTexture;
+skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite file
+
+
+    const int ENEMY_WIDTH = 50;
+    const int ENEMY_HEIGHT = 60;
+
+
+	//mid right
+    spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 0, 900, 200, 1.0);
+
+
+//	neeche wali
+   spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 1, 500, 400, -1.5);
+
+   //mid left
+    spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 2, 200, 300, 1.0);
+   
+	//mid left
+	spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 3, 150, 300, 1.2);
+   
+
+	//top right
+    spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 4, 900, 150, -1.0);
+   
+	//mid right
+	 spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 5, 900, 250, 1.5);
+  
+	 //bottom right
+	spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 6, 900, 500, -1.0);
+  
+	//top left
+	spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 7, 100, 20, 1.5);
+    
+
+
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 8, 200, 500, 1.8);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 9, 600, 500, -2.2);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 10, 900, 600, 1.3);
+    spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 11, 350, 600, -1.7);
+    
 
 
 
 
+
+
+
+
+    
 
 
 
@@ -500,13 +693,13 @@ int main()
 
     // Horitzontal platforms on the sides , above ones
 
-/*      lvl[3][1] = '#';
+        lvl[3][1] = '#';
         lvl[3][2] = '#';
         lvl[3][3] = '#';
-        lvl[3][4] = '#';
-*/
+      //  lvl[3][4] = '#';
 
-        lvl[3][13] = '#';
+
+       // lvl[3][13] = '#';
         lvl[3][14] = '#';
         lvl[3][15] = '#';
         lvl[3][16] = '#';
@@ -519,6 +712,11 @@ int main()
      lvl[5][8] = '#';
      lvl[5][9] = '#';
      lvl[5][10] = '#';
+     lvl[5][11] = '#';
+     
+    
+
+
     
 
 
@@ -556,6 +754,200 @@ int main()
 
     Event ev;
     
+
+
+    // ===== PLAYER CHOOSE SCREEN =====
+// Press G for green, Y for yellow
+while (window.isOpen() && !chosen)
+{
+    Event ev;
+    while (window.pollEvent(ev))
+    {
+        if (ev.type == Event::Closed)
+            window.close();
+    }
+
+    if (Keyboard::isKeyPressed(Keyboard::G))
+    {
+        playerChoice = 0;
+        chosen = true;
+    }
+    else if (Keyboard::isKeyPressed(Keyboard::Y))
+    {
+        playerChoice = 1;
+        chosen = true;
+    }
+
+    window.clear();
+    // optional: draw bg and both idle sprites so user sees choices:
+    // bg
+    window.draw(bgSprite);
+    
+    window.draw(txtChoose);   // "Choose player"
+    window.draw(GorY);  
+    
+
+
+    // green idle on left
+
+    PlayerSprite.setTexture(player_RightTxt_Idle);
+    PlayerSprite.setPosition(300, 400);
+    window.draw(PlayerSprite);
+    // yellow idle on right
+    YPlayerSprite.setPosition(700, 400);
+    window.draw(YPlayerSprite);
+
+    window.display();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+    // ===== APPLY CHOSEN PLAYER TEXTURES =====
+if (playerChoice == 0)   // GREEN
+{
+    // idle
+    player_LeftTxt_Idle  = player_LeftTxt_Idle;   // already green
+    player_RightTxt_Idle = player_RightTxt_Idle;
+
+    // walk
+    player_LeftTexture[0] = player_LeftTexture[0];
+    player_LeftTexture[1] = player_LeftTexture[1];
+    player_LeftTexture[2] = player_LeftTexture[2];
+    player_LeftTexture[3] = player_LeftTexture[3];
+
+    player_RightTexture[0] = player_RightTexture[0];
+    player_RightTexture[1] = player_RightTexture[1];
+    player_RightTexture[2] = player_RightTexture[2];
+    player_RightTexture[3] = player_RightTexture[3];
+
+    // keep your existing green vacuum textures (playerL_vac_*, playerR_vac_*)
+}
+
+*/
+
+if(playerChoice ==1 )                 // YELLOW
+{
+    // use yellow textures instead
+    player_LeftTxt_Idle  = Yplayer_LeftTxt_Idle;
+    player_RightTxt_Idle = Yplayer_RightTxt_Idle;
+
+    player_LeftTexture[0] = Yplayer_LeftTexture[0];
+    player_LeftTexture[1] = Yplayer_LeftTexture[1];
+    player_LeftTexture[2] = Yplayer_LeftTexture[2];
+    player_LeftTexture[3] = Yplayer_LeftTexture[3];
+
+    player_RightTexture[0] = Yplayer_RightTexture[0];
+    player_RightTexture[1] = Yplayer_RightTexture[1];
+    player_RightTexture[2] = Yplayer_RightTexture[2];
+    player_RightTexture[3] = Yplayer_RightTexture[3];
+
+    // if you have yellow vacuum sprites, assign them similarly:
+    // playerL_vac_up   = YplayerL_vac_up;
+    // playerR_vac_up   = YplayerR_vac_up;
+    // etc.
+}
+
+// reset player sprite to chosen right-idle before game starts
+PlayerSprite.setTexture(player_RightTxt_Idle);
+PlayerSprite.setPosition(player_x, player_y);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     while (window.isOpen())
     {
         while (window.pollEvent(ev))
@@ -824,18 +1216,24 @@ float playerPosY = PlayerSprite.getPosition().y;
 
                 //Crossover = enemies vacuum mein aa jayen
 
-                bool crossover= (vacLeft < enRight && vacRight>enLeft &&vacTop<enBottom &&vacBottom>enTop);
+                bool crossover= (vacLeft < enRight &&  vacRight>enLeft  &&vacTop<enBottom &&vacBottom>enTop);
 
                 if (crossover && captured_enemyCount < 3 )
                  {
                     enemy_alive[i]= false;  //sucked into the vacuum
                     captured_enemyCount++;
+
+
+                    player_score +=50;
                  }
             }
            
         }
 
+score_text.setString("Score: " + to_string(player_score));  // use player_score, not score
 
+
+livesText.setString("Lives: " + to_string(playerLives));  
 
 
                 // Bag follows player if carrying enemies
@@ -864,11 +1262,28 @@ float playerPosY = PlayerSprite.getPosition().y;
 
 
 
+for(int i = 0; i < MAX_ENEMIES; i++)
+{
 
+ if(enemy_alive[i])
+    {
+        if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
+                                      enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
+        {
+            playerLives--;
+            player_x = 500;
+            player_y = 150;
+            velocityY = 0;
+            captured_enemyCount = 0;
+            if(playerLives <= 0)
+            {
+                window.close();
+            }
+            break;
+        }
+    }
 
-
-
-
+}
 
 
 
@@ -884,18 +1299,36 @@ float playerPosY = PlayerSprite.getPosition().y;
         
         update_enemies(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, MAX_ENEMIES, lvl, cell_size, ENEMY_WIDTH, ENEMY_HEIGHT, gravity);
         
+      
         for(int i = 0; i < MAX_ENEMIES; i++)
         {
+
+			
             if(enemy_alive[i])
             {
+                if(enemy_type[i] == 1)
+                {
+                    enemySprite.setTexture(ghostTexture);
+                }
+                else if(enemy_type[i] == 2)
+                {
+                    enemySprite.setTexture(skeletonTexture);
+                }
                 enemySprite.setPosition(enemy_x[i], enemy_y[i]);
                 window.draw(enemySprite);
             }
+		
         }
 
         player_gravity(lvl, offset_y, velocityY, onGround, gravity, terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
         check_ceiling_collision(lvl, player_y, velocityY, player_x, cell_size, PlayerWidth);
         
+
+         window.draw(score_text);
+
+         window.draw(livesText);
+
+
         PlayerSprite.setPosition(player_x, player_y);
         window.draw(PlayerSprite);
 
@@ -919,8 +1352,7 @@ float playerPosY = PlayerSprite.getPosition().y;
                         window.draw(vacuum_Sprite_right);
                 }
 
-
-
+       
 
 
         window.display();
