@@ -1,3 +1,26 @@
+/*
+
+Name of Student 1:    Zohaib Uddin
+Roll No:              25i - 0602
+Section:              E
+
+Name of Student2:     Muhammad Mudassir Zia
+Roll NO:              25i - 0894
+Section:              E
+
+
+ ---------Programming Fundamentals Project-----------
+
+ Game:  Tumblepop
+
+
+*/
+
+
+
+
+
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -11,41 +34,57 @@ using namespace std;
 int screen_x = 1136;
 int screen_y = 896;
 
-void check_ceiling_collision(char** lvl, float& player_y, float& velocityY,
-                             float player_x, int cell_size, int PlayerWidth)
-{
-    if (velocityY >= 0) return;
 
+
+
+//Functions for the code
+
+void check_ceiling_collision(char** lvl, float& player_y, float& velocityY, float player_x, int cell_size, int PlayerWidth)
+{
+
+    //If no up movement, no collision
+    if (velocityY >= 0) return;
+ 
     int row = (int)(player_y + velocityY) / cell_size;
     int col_left  = (int)(player_x) / cell_size;
     int col_mid   = (int)(player_x + PlayerWidth/2) / cell_size;
     int col_right = (int)(player_x + PlayerWidth) / cell_size;
 
-    char top_left  = lvl[row][col_left];
+    char top_left  = lvl[row][col_left];    
     char top_mid   = lvl[row][col_mid];
     char top_right = lvl[row][col_right];
 
+
+    //Checking if any of tile is block
     if (top_left == '#' || top_mid == '#' || top_right == '#')
     {
-        velocityY = 0;
-        player_y = (row + 1) * cell_size;
+        velocityY = 0;                     //player stops
+        player_y = (row + 1) * cell_size;   //PLayer neeche push hoga
     }
 }
 
 void side_collision(char** lvl, float& player_x, float player_y, float move_x, int cell_size, int PlayerHeight, int PlayerWidth)
 {
+
+    //No left/right movement = no collision need
     if (move_x == 0) return;
    
-    float new_x = player_x + move_x;
+    float new_x = player_x + move_x;     //new position on x axis
    
+
+
+   // Block ke right pe 3 points 
     char left_top = lvl[(int)(player_y) / cell_size][(int)(new_x) / cell_size];
     char left_mid = lvl[(int)(player_y + PlayerHeight/2) / cell_size][(int)(new_x) / cell_size];
     char left_bottom = lvl[(int)(player_y + PlayerHeight - 1) / cell_size][(int)(new_x) / cell_size];
    
+    //Block ke left pe 3 points
     char right_top = lvl[(int)(player_y) / cell_size][(int)(new_x + PlayerWidth) / cell_size];
     char right_mid = lvl[(int)(player_y + PlayerHeight/2) / cell_size][(int)(new_x + PlayerWidth) / cell_size];
     char right_bottom = lvl[(int)(player_y + PlayerHeight - 1) / cell_size][(int)(new_x + PlayerWidth) / cell_size];
    
+
+    //If anyone of these points are blocks, 
     if (left_top == '#' || left_mid == '#' || left_bottom == '#' ||
         right_top == '#' || right_mid == '#' || right_bottom == '#')
     {
@@ -223,10 +262,9 @@ void spawn_skeleton(float enemy_x[], float enemy_y[], float enemy_velocityX[],
 bool check_player_enemy_collision(float player_x, float player_y, int playerWidth, int playerHeight,
                                   float enemy_x, float enemy_y, int enemyWidth, int enemyHeight)
 {
-    return (player_x < enemy_x + enemyWidth &&
-            player_x + playerWidth > enemy_x &&
-            player_y < enemy_y + enemyHeight &&
-            player_y + playerHeight > enemy_y);
+
+   //
+    return (player_x < enemy_x + enemyWidth &&  player_x + playerWidth > enemy_x &&  player_y < enemy_y + enemyHeight &&   player_y + playerHeight > enemy_y);
 }
 
 
@@ -280,15 +318,20 @@ int main()
     Texture blockTexture;
     Sprite blockSprite;
 
-    blockTexture.loadFromFile("Data/block3.png");
+
+    // Block from the folder
+    blockTexture.loadFromFile("Assets/Sprites/block3.png");
     blockSprite.setTexture(blockTexture);
 
-    bgTex.loadFromFile("Data/bg4.png");
+    //background from the folder
+    bgTex.loadFromFile("Assets/Sprites/bg4.png");
     bgSprite.setTexture(bgTex);
     bgSprite.setPosition(0,0);
 
+
+    //music file from folder
     Music lvlMusic;
-    lvlMusic.openFromFile("Data/mus.ogg");
+    lvlMusic.openFromFile("Assets/Sound/mus.ogg");
     lvlMusic.setVolume(20);
     lvlMusic.play();
     lvlMusic.setLoop(true);
@@ -300,14 +343,14 @@ int main()
     const float jumpStrength = -20;
     const float gravity = 1;
 
-    int player_score=0;
-    bool bonusGiven = false; 
+    int player_score=0;                     //score by capturing enemies
+    bool bonusGiven = false;                //bonus for completing level 1
 
 
  //  Menu for player choosing
 
     Font player_Font;
-    player_Font.loadFromFile("Data/menu.ttf");
+    player_Font.loadFromFile("Assets/Font/menu.ttf");
 
 
     //Heading of choose player
@@ -336,7 +379,7 @@ int main()
  // Font and texture for the score   
 
     Font score_font;
-    score_font.loadFromFile("Data/Kotton.ttf");
+    score_font.loadFromFile("Assets/Font/Kotton.ttf");
 
     Text score_text;
     score_text.setFont(score_font);
@@ -350,9 +393,8 @@ int main()
 
 //font and texture for lives count
 
-
 Font lives_Font;
-lives_Font.loadFromFile("Data/Kotton.ttf");
+lives_Font.loadFromFile("Assets/Font/Kotton.ttf");
 
 Text livesText;
 livesText.setFont(lives_Font);
@@ -405,7 +447,7 @@ livesText.setString("Lives: 3");
 
 
 
-//Green player
+//Green player textures
 
     Texture player_LeftTxt_Idle;
     Texture player_RightTxt_Idle;
@@ -422,17 +464,13 @@ livesText.setString("Lives: 3");
 
 
 
-//YEllow player's
+//YEllow player's  texures
 
     Texture Yplayer_LeftTxt_Idle;
     Texture Yplayer_RightTxt_Idle;
     Texture Yplayer_RightTexture[4];
     Texture Yplayer_LeftTexture[4];
     Sprite YPlayerSprite;
-
-
-
-
 
 
 
@@ -447,42 +485,49 @@ livesText.setString("Lives: 3");
 
     int PlayerHeight = 100;
     int PlayerWidth = 60;
-    int animationFrame = 0;
-    int count = 0;
+    int animationFrame = 0;             //for animation
+    int count = 0;                       //counter for animation
     bool facingLeft = false;           //player ka left,right
-    bool facingUp = false;
+    bool facingUp = false;             //player ka up , down ke lye
 
     bool vacuumActive = false;       //vacuum ke lye
-    bool isPaused = false;  // PAUSE VARIABLE
+    bool isPaused = false;           // pause karne ke lye
 
-    int captured_enemyCount = 0;
-    int playerLives = 3;
+    int captured_enemyCount = 0;             //count of how many enemies captured in the bag
+    int playerLives = 3;                
 
-//Green player
 
-    player_LeftTxt_Idle.loadFromFile("Data/playerl.png");
-    player_LeftTexture[0].loadFromFile("Data/WalkL1.png");
-    player_LeftTexture[1].loadFromFile("Data/WalkL2.png");
-    player_LeftTexture[2].loadFromFile("Data/WalkL3.png");
-    player_LeftTexture[3].loadFromFile("Data/WalkL4.png");
 
-    player_RightTxt_Idle.loadFromFile("Data/playerRight.png");
-    player_RightTexture[0].loadFromFile("Data/WalkR1.png");
-    player_RightTexture[1].loadFromFile("Data/WalkR2.png");
-    player_RightTexture[2].loadFromFile("Data/WalkR3.png");
-    player_RightTexture[3].loadFromFile("Data/WalkR4.png");
+
+//Green player sprites
+
+    player_LeftTxt_Idle.loadFromFile("Assets/Sprites/playerl.png");
+    player_LeftTexture[0].loadFromFile("Assets/Sprites/WalkL1.png");        //first animation
+    player_LeftTexture[1].loadFromFile("Assets/Sprites/WalkL2.png");       //second animation
+    player_LeftTexture[2].loadFromFile("Assets/Sprites/WalkL3.png");       //third animation
+    player_LeftTexture[3].loadFromFile("Assets/Sprites/WalkL4.png");       //forth animation
+
+    player_RightTxt_Idle.loadFromFile("Assets/Sprites/playerRight.png");
+    player_RightTexture[0].loadFromFile("Assets/Sprites/WalkR1.png");     //first animation rigtside
+    player_RightTexture[1].loadFromFile("Assets/Sprites/WalkR2.png");     //second animation rigtside
+    player_RightTexture[2].loadFromFile("Assets/Sprites/WalkR3.png");       //third animation rigtside  
+    player_RightTexture[3].loadFromFile("Assets/Sprites/WalkR4.png");       //forth animation rigtside
 
     PlayerSprite.setTexture(player_RightTexture[0]);
     PlayerSprite.setScale(2.5f,2.5f);
     PlayerSprite.setOrigin(0,0);
     PlayerSprite.setPosition(player_x, player_y);
 
+
+
+
+    //Bag textures and sprite
     Texture bag_Tex;
     Sprite  bag_Sprite;
 
-    bag_Tex.loadFromFile("Data/redbag1.png");   // your bag image
+    bag_Tex.loadFromFile("Assets/Sprites/redbag1.png");     // bag image
     bag_Sprite.setTexture(bag_Tex);
-    bag_Sprite.setScale(2.5f, 2.5f);       // roughly match player scale
+    bag_Sprite.setScale(2.5f, 2.5f);              // matching our player
 
 
 
@@ -498,32 +543,32 @@ livesText.setString("Lives: 3");
 
     //vacuum sprites
 
-    playerL_vac_down.loadFromFile ("Data/playerL_vac_down.png");
-    playerL_vac_up.loadFromFile ("Data/playerL_vac_up.png");
-    playerL_vac_left.loadFromFile ("Data/WalkL1.png");
+    playerL_vac_down.loadFromFile ("Assets/Sprites/playerL_vac_down.png");
+    playerL_vac_up.loadFromFile ("Assets/Sprites/playerL_vac_up.png");
+    playerL_vac_left.loadFromFile ("Assets/Sprites/WalkL1.png");
 
-    playerR_vac_down.loadFromFile ("Data/playerR_vac_down.png");
-    playerR_vac_up.loadFromFile ("Data/playerR_vac_up.png");
-    playerR_vac_right.loadFromFile ("Data/WalkR1.png");
+    playerR_vac_down.loadFromFile ("Assets/Sprites/playerR_vac_down.png");
+    playerR_vac_up.loadFromFile ("Assets/Sprites/playerR_vac_up.png");
+    playerR_vac_right.loadFromFile ("Assets/Sprites/WalkR1.png");
    
 
     
 
 
-//Yellow player
+//Yellow player textures and sprites
 
 
-    Yplayer_LeftTxt_Idle.loadFromFile("Data/yellowPlayer_Idle.png");
-    Yplayer_LeftTexture[0].loadFromFile("Data/YplayerL1.png");
-    Yplayer_LeftTexture[1].loadFromFile("Data/YplayerL2.png");
-    Yplayer_LeftTexture[2].loadFromFile("Data/YplayerL3.png");
-    Yplayer_LeftTexture[3].loadFromFile("Data/YplayerL4.png");
+    Yplayer_LeftTxt_Idle.loadFromFile("Assets/Sprites/yellowPlayer_Idle.png");
+    Yplayer_LeftTexture[0].loadFromFile("Assets/Sprites/YplayerL1.png");
+    Yplayer_LeftTexture[1].loadFromFile("Assets/Sprites/YplayerL2.png");
+    Yplayer_LeftTexture[2].loadFromFile("Assets/Sprites/YplayerL3.png");
+    Yplayer_LeftTexture[3].loadFromFile("Assets/Sprites/YplayerL4.png");
 
-    Yplayer_RightTxt_Idle.loadFromFile("Data/yellowPlayer_RightIdle.png");
-    Yplayer_RightTexture[0].loadFromFile("Data/y_right1.png");
-    Yplayer_RightTexture[1].loadFromFile("Data/y_right2.png");
-    Yplayer_RightTexture[2].loadFromFile("Data/y_right3.png");
-    Yplayer_RightTexture[3].loadFromFile("Data/y_right4.png");
+    Yplayer_RightTxt_Idle.loadFromFile("Assets/Sprites/yellowPlayer_RightIdle.png");
+    Yplayer_RightTexture[0].loadFromFile("Assets/Sprites/y_right1.png");
+    Yplayer_RightTexture[1].loadFromFile("Assets/Sprites/y_right2.png");
+    Yplayer_RightTexture[2].loadFromFile("Assets/Sprites/y_right3.png");
+    Yplayer_RightTexture[3].loadFromFile("Assets/Sprites/y_right4.png");
 
     YPlayerSprite.setTexture(Yplayer_RightTexture[0]);
     YPlayerSprite.setScale(2.5f,2.5f);
@@ -532,8 +577,8 @@ livesText.setString("Lives: 3");
 
 
 
-    int playerChoice = 0;   // 0 = green, 1 = yellow
-    bool chosen = false;
+    int playerChoice = 0;             // 0 is green,  1 is yellow
+    bool chosen = false;      
 
 
 
@@ -541,7 +586,7 @@ livesText.setString("Lives: 3");
 
 
 
-    //vacuum sucking sprites
+    //vacuum capturing sprites
 
     Sprite vacuum_Sprite_left;
     Sprite vacuum_Sprite_right;
@@ -552,21 +597,23 @@ livesText.setString("Lives: 3");
     Texture vacuum_Tex_up;
     Texture vacuum_Tex_down;
 
-    vacuum_Tex_left.loadFromFile("Data/v_left.png"); // your small vacuum-front sprite
+    vacuum_Tex_left.loadFromFile("Assets/Sprites/v_left.png");        // leftside vacuum
     vacuum_Sprite_left.setTexture(vacuum_Tex_left);
 
-    vacuum_Tex_right.loadFromFile("Data/v_right.png"); // your small vacuum-front sprite
+    vacuum_Tex_right.loadFromFile("Assets/Sprites/v_right.png");     //   right rainbow vac
     vacuum_Sprite_right.setTexture(vacuum_Tex_right);
 
-    vacuum_Tex_up.loadFromFile("Data/v_up.png"); // your small vacuum-front sprite
+    vacuum_Tex_up.loadFromFile("Assets/Sprites/v_up.png");      //  upside vacuum
     vacuum_Sprite_up.setTexture(vacuum_Tex_up);
 
-    vacuum_Tex_down.loadFromFile("Data/v_down.png"); // your small vacuum-front sprite
+    vacuum_Tex_down.loadFromFile("Assets/Sprites/v_down.png");    // downside vacuum
     vacuum_Sprite_down.setTexture(vacuum_Tex_down);
 
 
+    //scaling the sprite to bigger
+
     vacuum_Sprite_left.setScale(2.0f, 2.0f);
-    vacuum_Sprite_right.setScale(2.0f, 2.0f);
+    vacuum_Sprite_right.setScale(2.0f, 2.0f);    
     vacuum_Sprite_up.setScale(2.0f, 2.0f);
     vacuum_Sprite_down.setScale(2.0f, 2.0f);
 
@@ -593,17 +640,22 @@ livesText.setString("Lives: 3");
 
 
 
+  //Ghost sprites and textures
+
     Texture ghostTexture;
     Sprite enemySprite;
-    ghostTexture.loadFromFile("Data/ghostL1.png");
+    ghostTexture.loadFromFile("Assets/Sprites/ghostL1.png");
     enemySprite.setTexture(ghostTexture);
     enemySprite.setScale(2, 2);
 
-
+//Skeleton sprites and textures
 
     Texture skeletonTexture;
-skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite file
+skeletonTexture.loadFromFile("Assets/Sprites/skele_L_Idle.png");  // your skeleton sprite file
 
+
+
+//all enemies width and height
 
     const int ENEMY_WIDTH = 50;
     const int ENEMY_HEIGHT = 60;
@@ -613,7 +665,7 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
     spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 0, 900, 200, 1.0);
 
 
-//	neeche wali
+    //neeche wali
    spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 1, 500, 400, -1.5);
 
    //mid left
@@ -636,6 +688,7 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
 	spawn_ghost(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 7, 100, 20, 1.5);
     
 
+  //All skeletons locations
 
     spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 8, 200, 500, 2);
     spawn_skeleton(enemy_x, enemy_y, enemy_velocityX, enemy_velocityY, enemy_alive, enemy_type, 9, 600, 500, 2);
@@ -677,18 +730,59 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
 
 
 
-    // Top wall
-    for(int j = 0; j < 18; j++) 
-      lvl[0][j] = '#';
-    
-    // Left wall
-    for(int i = 0; i <= 10; i++) 
-     lvl[i][0] = '#';
-    
-    // Right wall
-    for(int i = 0; i <= 10; i++) 
-     lvl[i][17] = '#';
-    
+   //HIghest block line
+
+	lvl[0][0] = '#';
+	lvl[0][1] = '#';
+	lvl[0][2] = '#';
+	lvl[0][3] = '#';
+	lvl[0][4] = '#';
+	lvl[0][5] = '#';
+	lvl[0][6] = '#';
+	lvl[0][7] = '#';
+	lvl[0][8] = '#';
+	lvl[0][9] = '#';
+	lvl[0][10] = '#';
+	lvl[0][11] = '#';
+	lvl[0][12] = '#';
+	lvl[0][13] = '#';
+	lvl[0][14] = '#';
+	lvl[0][15] = '#';
+	lvl[0][16] = '#';
+	lvl[0][17] = '#';
+
+
+  //left side wall
+
+	lvl[0][0] = '#';
+	lvl[1][0] = '#';
+	lvl[2][0] = '#';
+	lvl[3][0] = '#';
+	lvl[4][0] = '#';
+	lvl[5][0] = '#';
+	lvl[6][0] = '#';
+	lvl[7][0] = '#';
+	lvl[8][0] = '#';
+	lvl[9][0] = '#';
+	lvl[10][0] = '#';
+
+
+
+   //right side wall
+
+	lvl[0][17] = '#';
+	lvl[1][17] = '#';
+	lvl[2][17] = '#';
+	lvl[3][17] = '#';
+	lvl[4][17] = '#';
+	lvl[5][17] = '#';
+	lvl[6][17] = '#';
+	lvl[7][17] = '#';
+	lvl[8][17] = '#';
+	lvl[9][17] = '#';
+	lvl[10][17] = '#';
+	
+	
 
 
 
@@ -739,10 +833,26 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
 
 
     // Bottom floor
-    for(int j = 0; j < 18; j++) 
-    
-    lvl[10][j] = '#';
 
+    lvl[10][0] = '#';
+    lvl[10][1] = '#';
+    lvl[10][2] = '#';
+    lvl[10][3] = '#';
+    lvl[10][4] = '#';
+    lvl[10][5] = '#';
+    lvl[10][6] = '#';
+	lvl[10][7] = '#';
+	lvl[10][8] = '#';
+	lvl[10][9] = '#';
+    lvl[10][10] = '#';
+    lvl[10][11] = '#';
+    lvl[10][12] = '#';
+    lvl[10][13] = '#';
+    lvl[10][14] = '#';
+    lvl[10][15] = '#';
+    lvl[10][16] = '#';
+    lvl[10][17] = '#';
+   
 
 
 
@@ -757,7 +867,8 @@ skeletonTexture.loadFromFile("Data/skele_L_Idle.png");  // your skeleton sprite 
     
 
 
-    // ===== PLAYER CHOOSE SCREEN =====
+    
+
 // Press G for green, Y for yellow
 while (window.isOpen() && !chosen)
 {
@@ -768,33 +879,34 @@ while (window.isOpen() && !chosen)
             window.close();
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::G))
+    if (Keyboard::isKeyPressed(Keyboard::G))      //Green chosen
     {
         playerChoice = 0;
         chosen = true;
     }
-    else if (Keyboard::isKeyPressed(Keyboard::Y))
+    else if (Keyboard::isKeyPressed(Keyboard::Y))       //Yellow chosen
     {
         playerChoice = 1;
         chosen = true;
     }
 
     window.clear();
-    // optional: draw bg and both idle sprites so user sees choices:
-    // bg
+    
     window.draw(bgSprite);
     
-    window.draw(txtChoose);   // "Choose player"
-    window.draw(GorY);  
+    window.draw(txtChoose);   
+    window.draw(GorY);         
     
 
 
-    // green idle on left
+    // greenplayer idle on left side
 
     PlayerSprite.setTexture(player_RightTxt_Idle);
     PlayerSprite.setPosition(300, 400);
     window.draw(PlayerSprite);
-    // yellow idle on right
+
+
+    // yellow player idle on right side
     YPlayerSprite.setPosition(700, 400);
     window.draw(YPlayerSprite);
 
@@ -809,39 +921,9 @@ while (window.isOpen() && !chosen)
 
 
 
-
-
-
-
-
-/*
-
-    // ===== APPLY CHOSEN PLAYER TEXTURES =====
-if (playerChoice == 0)   // GREEN
-{
-    // idle
-    player_LeftTxt_Idle  = player_LeftTxt_Idle;   // already green
-    player_RightTxt_Idle = player_RightTxt_Idle;
-
-    // walk
-    player_LeftTexture[0] = player_LeftTexture[0];
-    player_LeftTexture[1] = player_LeftTexture[1];
-    player_LeftTexture[2] = player_LeftTexture[2];
-    player_LeftTexture[3] = player_LeftTexture[3];
-
-    player_RightTexture[0] = player_RightTexture[0];
-    player_RightTexture[1] = player_RightTexture[1];
-    player_RightTexture[2] = player_RightTexture[2];
-    player_RightTexture[3] = player_RightTexture[3];
-
-    // keep your existing green vacuum textures (playerL_vac_*, playerR_vac_*)
-}
-
-*/
-
 if(playerChoice ==1 )                 // YELLOW
 {
-    // use yellow textures instead
+    //Yellow textures assigned
     player_LeftTxt_Idle  = Yplayer_LeftTxt_Idle;
     player_RightTxt_Idle = Yplayer_RightTxt_Idle;
 
@@ -855,94 +937,11 @@ if(playerChoice ==1 )                 // YELLOW
     player_RightTexture[2] = Yplayer_RightTexture[2];
     player_RightTexture[3] = Yplayer_RightTexture[3];
 
-    // if you have yellow vacuum sprites, assign them similarly:
-    // playerL_vac_up   = YplayerL_vac_up;
-    // playerR_vac_up   = YplayerR_vac_up;
-    // etc.
 }
 
-// reset player sprite to chosen right-idle before game starts
+
 PlayerSprite.setTexture(player_RightTxt_Idle);
 PlayerSprite.setPosition(player_x, player_y);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -953,21 +952,22 @@ PlayerSprite.setPosition(player_x, player_y);
     {
         while (window.pollEvent(ev))
         {
-            if (ev.type == Event::Closed)
+            if (ev.type == Event::Closed)             //closing window
             {
                 window.close();
             }
 
             if (ev.type == Event::KeyPressed) 
             {
-                pause_game(ev, isPaused);
-                 
+                pause_game(ev, isPaused);              //game paused
+                        
             }
         }
+
 if (!isPaused)
         {
 
-        // --- INPUT & STATE ---
+      
 
         if (Keyboard::isKeyPressed(Keyboard::Escape))
             window.close();
@@ -984,20 +984,20 @@ if (!isPaused)
             velocityY = jumpStrength;
 
 
-        // Movement and horizontal facing
+        // horizontal movement
         bool keyLeft = Keyboard::isKeyPressed(Keyboard::Left);
         bool keyRight = Keyboard::isKeyPressed(Keyboard::Right);
 
 
 
 
-        if (keyLeft)
+        if (keyLeft)           //player ius  facing Left side 
         {
             side_collision(lvl, player_x, player_y, -speed, cell_size, PlayerHeight, PlayerWidth);
             facingLeft = true;
-        }
-        if (keyRight)
-        {
+        } 
+        if (keyRight)              //player ius  facing right side
+        { 
             side_collision(lvl, player_x, player_y,  speed, cell_size, PlayerHeight, PlayerWidth);
             facingLeft = false;
         }
@@ -1006,13 +1006,16 @@ if (!isPaused)
 
 
 
-        // Vertical facing for vacuum (W = up, S = down)
+        // Vertical facing for vacuum (W means up, S means down)
+
         if (Keyboard::isKeyPressed(Keyboard::W))
             facingUp = true;
         if (Keyboard::isKeyPressed(Keyboard::S))
             facingUp = false;
 
-        // --- WALK ANIMATION COUNTER ---
+        
+            //walking animation
+
         if (keyLeft || keyRight)
         {
             count++;
@@ -1068,7 +1071,7 @@ float playerPosY = PlayerSprite.getPosition().y;
                     PlayerSprite.setTexture(playerR_vac_down);
             }
 
-            else if ( !(upPressed && downPressed) )
+            else if ( !(upPressed && downPressed) )      //not up nor down,
             {
 
              if (facingLeft)
@@ -1095,16 +1098,7 @@ float playerPosY = PlayerSprite.getPosition().y;
         }
 
 
-
-
-
-
-
-
-        
-
-
-        // --- VACUUM SPRITE POSITION --
+        // position of vacuum sprite with respect to player
 
         if (vacuumActive)
         {
@@ -1140,8 +1134,7 @@ float playerPosY = PlayerSprite.getPosition().y;
                 }
             }
 
-            //vacuum_Sprite_down.setPosition(playerPosX + offset_x, playerPosY + offset_y);
-
+        
             vacuum_Sprite_left.setPosition(playerPosX - offset_x , playerPosY + offset_y);
             vacuum_Sprite_right.setPosition(playerPosX + offset_x, playerPosY + offset_y);
 
@@ -1155,14 +1148,14 @@ float playerPosY = PlayerSprite.getPosition().y;
 
 
 
-        // >>> INSERT COLLISION CODE HERE <<<
+        
 
         if (vacuumActive)
         {
             bool upPressed   = Keyboard::isKeyPressed(Keyboard::W);
             bool downPressed = Keyboard::isKeyPressed(Keyboard::S);
 
-            // choose which vacuum sprite is active
+            // choosing which vacuum sprite is active
             float vacX, vacY;
             float vacuum_width= vacuum_Tex_up.getSize().x * 2.0f;   // because setScale(2,2)
             float wacuum_height = vacuum_Tex_up.getSize().y * 2.0f;
@@ -1182,7 +1175,7 @@ float playerPosY = PlayerSprite.getPosition().y;
                 vacX = vacuum_Sprite_left.getPosition().x;
                 vacY = vacuum_Sprite_left.getPosition().y;
             }
-            else
+            else        //facing right
             {
                 vacX = vacuum_Sprite_right.getPosition().x;
                 vacY = vacuum_Sprite_right.getPosition().y;
@@ -1192,7 +1185,6 @@ float playerPosY = PlayerSprite.getPosition().y;
 
             // All 4 Points of rainbow vacuum
 
-              // rainbow rect
             float vacLeft   = vacX;
             float vacRight  = vacX +vacuum_width;
             float vacTop    = vacY;
@@ -1203,7 +1195,7 @@ float playerPosY = PlayerSprite.getPosition().y;
             // check all enemies
             for (int i = 0; i < MAX_ENEMIES; i++)
             {
-                if (!enemy_alive[i])
+                if (!enemy_alive[i])     
                  continue;
 
                 float enX = enemy_x[i];
@@ -1215,7 +1207,7 @@ float playerPosY = PlayerSprite.getPosition().y;
                 float enBottom = enY + ENEMY_HEIGHT;
 
 
-                //Crossover = enemies vacuum mein aa jayen
+                //Crossover means enemies vacuum mein aa jayen
 
                 bool crossover= (vacLeft < enRight &&  vacRight>enLeft  &&vacTop<enBottom &&vacBottom>enTop);
 
@@ -1234,10 +1226,10 @@ float playerPosY = PlayerSprite.getPosition().y;
            
         }
 
-score_text.setString("Score: " + to_string(player_score));  // use player_score, not score
+score_text.setString("Score: " + to_string(player_score));   //for update of score of player
 
 
-livesText.setString("Lives: " + to_string(playerLives));  
+livesText.setString("Lives: " + to_string(playerLives));   //update lives of player
 
 
                 // Bag follows player if carrying enemies
@@ -1247,33 +1239,32 @@ livesText.setString("Lives: " + to_string(playerLives));
             float playerPosY = PlayerSprite.getPosition().y;
 
             float bagOffsetX;
-            float bagOffsetY = 15.0f;   // small vertical tweak; adjust as needed
+            float bagOffsetY = 15.0f;  
 
             if (facingLeft)
             {
                 // bag on right side of player
-                bagOffsetX = PlayerWidth;      // player width * scale (≈ 60 * 2.5 = 150)
+                bagOffsetX = PlayerWidth;      
             }
             else
             {
                 // bag on left side of player
-                bagOffsetX = -10.0f;                  // 40 pixels to the left; tweak this
+                bagOffsetX = -10.0f;                 
             }
 
             bag_Sprite.setPosition(playerPosX + bagOffsetX,
-                                playerPosY + bagOffsetY);  // follow player every frame 
+                                playerPosY + bagOffsetY);    //it follows player all the time
         }
 
 
+            //To empty the bag
 
-
-                    // Empty bag when E is pressed
             if (Keyboard::isKeyPressed(Keyboard::F) && captured_enemyCount > 0)
             {
                 captured_enemyCount = 0;
             }
 
-
+        //when all enemies finished
             bool allDead = true;
             for(int i = 0; i < MAX_ENEMIES; i++)
             {
@@ -1284,18 +1275,12 @@ livesText.setString("Lives: " + to_string(playerLives));
                 }
             }
 
-            if(allDead&&!bonusGiven)
+            if(allDead&&!bonusGiven)       //Bonus will be 1 time
             {
                 player_score += 1000;
                 bonusGiven=true;
-                // Game ends when all enemies are gone
+                // Game will end
             }
-
-
-
-
-
-
 
 
 
@@ -1310,7 +1295,7 @@ livesText.setString("Lives: " + to_string(playerLives));
                     if(check_player_enemy_collision(player_x, player_y, PlayerWidth, PlayerHeight,
                                                 enemy_x[i], enemy_y[i], ENEMY_WIDTH, ENEMY_HEIGHT))
                     {
-                        playerLives--;
+                        playerLives--;       //lives end hongi
                         player_x = 500;
                         player_y = 150;
                         velocityY = 0;
@@ -1324,12 +1309,6 @@ livesText.setString("Lives: " + to_string(playerLives));
                 }
 
             }
-
-
-
-
-
-
 
 
 
@@ -1348,11 +1327,11 @@ livesText.setString("Lives: " + to_string(playerLives));
             {
                 if(enemy_type[i] == 1)
                 {
-                    enemySprite.setTexture(ghostTexture);
+                    enemySprite.setTexture(ghostTexture);         //ghost enemy
                 }
                 else if(enemy_type[i] == 2)
-                {
-                    enemySprite.setTexture(skeletonTexture);
+                { 
+                    enemySprite.setTexture(skeletonTexture);            //skeleton enemy
                 }
                 enemySprite.setPosition(enemy_x[i], enemy_y[i]);
                 window.draw(enemySprite);
